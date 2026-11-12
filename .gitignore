@@ -1,0 +1,15 @@
+
+# Large AI model files
+*.bin
+*.safetensors
+*.pth
+
+# Python virtual environments
+phase7/venv/
+
+# Generated build files
+**/build/
+**/cmake-build-*/
+
+# Mac files
+.DS_Store

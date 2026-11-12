@@ -1,0 +1,26 @@
+#include <openvino/genai/llm_pipeline.hpp>
+#include <iostream>
+#include <string>
+#include <exception>
+
+int main(int argc, char* argv[]) {
+    const std::string model_path =
+        "../phase6/models/llama-3.2-3b-instruct-ov";
+
+    const std::string pr      ov::genai::LLMPipeline pipeline(model_path, "CPU");
+
+        ov::genai::GenerationConfig config;
+        config.max_new_tokens = 30;
+
+        auto result = pipeline.generate(prompt, config);
+
+        if (!result.texts.empty()) {
+            std::cout << "\nModel response:\n"
+                      << result.texts[0] << '\n';
+        } else {
+            std::cout << "The model returned no text.\n";
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << '\n';
+        return 1;
+  

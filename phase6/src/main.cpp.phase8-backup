@@ -1,0 +1,59 @@
+
+#include <openvino/genai/llm_pipeline.hpp>
+#include <iostream>
+#include <string>
+#include <exception>
+#include <chrono>
+
+int main(int argc, char* argv[]) {
+    const std::string model_path =
+        "../phase6/models/llama-3.2-3b-instruct-ov";
+
+    const std::string prompt =
+        (argc > 1) ? argv[1]
+                   : "Explain artificial intelligence in simple words.";
+
+    try {
+        using Clock = std::chrono::steady_clock;
+
+        auto load_start = Clock::now();
+
+        ov::genai::LLMPipeline pipeline(model_path, "CPU");
+
+        auto load_end = Clock::now();
+
+        double load_seconds =
+            std::chrono::duration<double>(
+                load_end - load_start).count();
+
+        ov::genai::GenerationConfig config;
+        config.max_new_tokens = 30;
+
+        auto generation_start = Clock::now();
+        auto result = pipeline.generate(prompt, config);
+        auto generation_end = Clock::now();
+
+        double generation_seconds =
+            std::chrono::duration<double>(
+                generation_end - generation_start).count();
+
+        if (!result.texts.empty()) {
+            std::cout << "\nModel response:\n"
+                      << result.texts[0] << '\n';
+        } else {
+            std::cout << "The model returned no text.\n";
+        }
+
+        std::cout << "\n--- Performance Results ---\n";
+        std::cout << "Model loading time: "
+                  << load_seconds << " seconds\n";
+        std::cout << "Generation time: "
+                  << generation_seconds << " seconds\n";
+
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << '\n';
+        return 1;
+    }
+
+    return 0;
+}
